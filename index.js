@@ -35,7 +35,6 @@ app.use(
     optionSuccessStatus: 200,
   })
 );
-console.log(process.env.PUBLIC_URL);
 /* working in the deploy*/
 // middleware
 app.use(express.json());
