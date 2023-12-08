@@ -11,16 +11,22 @@ import {
   updateProfileImage,
 } from "../controllers/ChapterController.js";
 import { upload } from "../utils/upload.js";
-import authMiddleWare from "../middleware/AuthMiddleware.js";
 const router = express.Router();
 
-router.post("/", CreateChapter);
+router.post(
+  "/",
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 },
+  ]),
+  CreateChapter
+);
 router.get("/", getAllChapters);
 router.get("/:id", getChapter);
 router.patch("/:id", UpdateChapter);
 router.delete("/:id", DeleteChapter);
 router.put("/rmM/:id", RemouveMembresChapter);
-router.put("/addM", addMembresChapter);
+router.put("/addM/", addMembresChapter);
 router.put(
   "/updateProfileImage",
   upload.single("profileImage"),

@@ -36,7 +36,7 @@ const activity = new mongoose.Schema({
   },
   EventType: {
     type: String,
-    enum: ["National", "Regional", "Intern"],
+    enum: ["National", "Regional", "Intern", "Extern"],
     required: true,
   },
   DossierSponsing: {
@@ -50,7 +50,18 @@ const activity = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-
+  albumFB: {
+    type: String,
+  },
+  vediosFB: {
+    type: String,
+  },
+  album: {
+    type: String,
+  },
+  vedios: {
+    type: String,
+  },
   partners: [],
   Chapter: {
     type: mongoose.Schema.Types.ObjectId,
@@ -68,6 +79,10 @@ const activity = new mongoose.Schema({
     type: String,
     default: "waiting",
     enum: ["waiting", "Refused", "Accepted"],
+  },
+  verified: {
+    type: Boolean,
+    default: false,
   },
   giftedScore: { type: Number },
 });

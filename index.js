@@ -30,7 +30,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: process.env.PUBLIC_URL,
+    origin: "http://localhost:3000",
     credentials: true,
     optionSuccessStatus: 200,
   })

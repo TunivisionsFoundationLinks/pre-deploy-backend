@@ -1,7 +1,7 @@
-import Club from "../models/ClubModel.js";
-import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import asyncHandler from "express-async-handler";
 import ChapterModel from "../models/ChapterModel.js";
+import Club from "../models/ClubModel.js";
 import UserModel from "../models/userModel.js";
 
 const UserDetails = {
@@ -52,7 +52,8 @@ export const CreateClub = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "Club already exists" });
     if (UsedEmail)
       return res.status(400).json({ message: "Email already Used" });
-
+    newClub.profileImage = req.files["profileImage"][0].filename;
+    newClub.coverImage = req.files["coverImage"][0].filename;
     // changed
     const Clubs = await newClub.save();
     //add the club to the chapter
@@ -66,7 +67,7 @@ export const CreateClub = asyncHandler(async (req, res) => {
       }
     );
 
-    res.status(200).json({ Chapter, Clubs });
+    return res.status(200).json({ Chapter, Clubs });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -180,7 +181,10 @@ export const addTunimateurs = asyncHandler(async (req, res) => {
       User.club = Clubs._id;
       User.clubName = Clubs.ClubName;
       User.role = req.body.role;
+
       User.Departement = req.body.Departement;
+      User.Chapter = Chapters._id;
+      User.ChapterName = Chapters.ChapterName;
       await User.following.push(Clubs.ChapterId);
       await User.following.push(Clubs._id);
       await Clubs.followers.push(User._id);
@@ -271,13 +275,14 @@ export const addBureau = asyncHandler(async (req, res) => {
           role: req.body.role,
           Departement: req.body.Departement,
           ClubName: Clubs.ClubName,
+          club: Clubs._id,
           Mondat: dateObject,
           EndMondat: dateObject + 1,
         }); // add new role to tunimateur
 
         User.club = Clubs._id;
         User.clubName = Clubs.ClubName;
-
+        User.isClub = true;
         User.role = req.body.role;
         User.Departement = req.body.Departement;
         await User.save();
@@ -423,7 +428,10 @@ export const RequestesJoinIn = asyncHandler(async (req, res) => {
     );
 
     if (index === -1) {
-      Clubs.requeste.push({ userid: users, Departement: req.body.Departement });
+      Clubs.requeste.push({
+        userid: req.body.userid,
+        Departement: req.body.Departement,
+      });
       users.request = true;
       await users.save();
       await Clubs.save();

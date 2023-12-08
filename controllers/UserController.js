@@ -57,7 +57,7 @@ export const updateUser = asyncHandler(async (req, res) => {
         process.env.JWTKEY,
         { expiresIn: "1h" }
       );
-      console.log({ user, token });
+
       res.status(200).json({ user, token });
     } catch (error) {
       res.status(500).json(error);
@@ -89,7 +89,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
 
 // Follow a User
 // changed
-export const followUser = asyncHandler((req, res) => {
+export const followUser = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const userId = req.body.userId;
 
@@ -125,7 +125,7 @@ export const followUser = asyncHandler((req, res) => {
 
 // Unfollow a User
 // changed
-export const unfollowUser = asyncHandler((req, res) => {
+export const unfollowUser = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const userId = req.body.userId;
 
@@ -155,5 +155,20 @@ export const unfollowUser = asyncHandler((req, res) => {
     );
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+export const BlockedAccount = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(401).json("user undefine");
+    }
+    user.blocked === true;
+    user.save();
+    return res.status(200).json({ msg: user.firstname + "is Blocked" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 });

@@ -10,6 +10,8 @@ const postSchema = mongoose.Schema(
       type: Date,
       default: new Date(),
     },
+    postActivity: { type: String },
+
     content: [String],
   },
   {

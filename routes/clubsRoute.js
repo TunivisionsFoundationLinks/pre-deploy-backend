@@ -11,9 +11,18 @@ import {
   UpdateClub,
   UpdateTunimateurs,
 } from "../controllers/ClubsControllers.js";
+import { upload } from "../utils/upload.js";
+
 const router = express.Router();
 
-router.post("/", CreateClub); // integration done
+router.post(
+  "/",
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 },
+  ]),
+  CreateClub
+); // integration done
 router.get("/", getAllClubs); // integration done
 router.get("/:id", getClub); // integration done
 router.patch("/:id", UpdateClub); // later

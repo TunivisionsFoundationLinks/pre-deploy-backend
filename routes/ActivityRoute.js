@@ -9,6 +9,8 @@ import {
   sendRecu,
   acceptedEvent,
   RefusedEvent,
+  PointsScore,
+  ValidationActivityFinal,
 } from "../controllers/ActivityController.js";
 import { upload } from "../utils/upload.js";
 const router = express.Router();
@@ -28,5 +30,7 @@ router.put("/:id/recu", upload.single("recu"), sendRecu); // waiting
 router.put("/:id/verify", verified); // waiting
 router.put("/:id/refuse", RefusedEvent); // done but have some problems
 router.put("/:id/accepted", acceptedEvent); // done but have some problems
+router.put("/:id/score", PointsScore); // done but have some problems
+router.put("/:id/sendlink", ValidationActivityFinal); // done but have some problems
 
 export default router;

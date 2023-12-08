@@ -1,7 +1,7 @@
-import ActivityModel from "../models/activitesModel.js";
-import Club from "../models/ClubModel.js";
-import ChapterModel from "../models/ChapterModel.js";
 import asyncHandler from "express-async-handler";
+import ChapterModel from "../models/ChapterModel.js";
+import Club from "../models/ClubModel.js";
+import ActivityModel from "../models/activitesModel.js";
 import UserModel from "../models/userModel.js";
 const chapterDetails = {
   ChapterName: 1,
@@ -253,5 +253,70 @@ export const RefusedEvent = asyncHandler(async (req, res) => {
     return res.status(201).json("activity refused");
   } catch (error) {
     return res.status(500).json(error.message);
+  }
+});
+
+export const PointsScore = asyncHandler(async (req, res) => {
+  try {
+    const point = req.body.point;
+    const pointBureau = req.body.pointBureau;
+    const pointCoordination = req.body.pointCoordination;
+
+    const id = req.params.id;
+    const activity = await ActivityModel.findById(id);
+    if (!activity) {
+      return res.status(404).json("activity not found");
+    }
+    const club = await Club.findById(activity.CreatorId);
+    if (!club) {
+      return res.status(404).json("club is not found");
+    }
+    club.score += parseInt(point);
+    await club.save();
+    if (activity.CoordinationEvent?.length !== 0) {
+      await activity.CoordinationEvent.map(async (user) => {
+        const updateCoordination = await UserModel.findByIdAndUpdate(
+          user,
+          {
+            $inc: { points: parseInt(pointCoordination) },
+          },
+          { new: true }
+        );
+        return updateCoordination;
+      });
+    }
+    if (club.Bureau?.length !== 0) {
+      await club.Bureau?.map(async (user) => {
+        const updateBureau = await UserModel.findByIdAndUpdate(
+          user.membres,
+          {
+            $inc: { points: parseInt(pointBureau) },
+          },
+          { new: true }
+        );
+        return updateBureau;
+      });
+    }
+    activity.verified = true;
+    await activity.save();
+    return res.status(201).json(club);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+});
+export const ValidationActivityFinal = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const activity = await ActivityModel.findById(id);
+    activity.albumFB = req.body.fblink;
+    activity.vediosFB = req.body.fbvediolink;
+    activity.album = req.body.album;
+    activity.vedios = req.body.vedios;
+
+    activity.save();
+    return res.status(200).json(activity);
+  } catch (error) {
+    return res.status(500).json(error);
   }
 });

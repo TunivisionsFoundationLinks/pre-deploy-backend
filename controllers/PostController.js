@@ -2,6 +2,7 @@ import PostModel from "../models/postModel.js";
 import UserModel from "../models/userModel.js";
 import mongoose from "mongoose";
 import asyncHandler from "express-async-handler";
+
 // creating a post
 
 export const createPost = asyncHandler(async (req, res) => {

@@ -81,6 +81,10 @@ export const loginUser = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Invalid e-mail or password");
       } else {
+        if (user.Blocked === true) {
+          res.status(400);
+          throw new Error("your account is blocked");
+        }
         const token = jwt.sign(
           { email: user.email, id: user._id },
           process.env.JWTKEY,

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import softDelete from "mongoosejs-soft-delete";
-
+import bcrypt from "bcrypt";
 const ChapterSchema = new mongoose.Schema(
   {
     ChapterName: {
@@ -28,7 +28,13 @@ const ChapterSchema = new mongoose.Schema(
         role: { type: String, enum: ["Assistant", "Manager", "Coordinateur"] },
         Departement: {
           type: String,
-          enum: ["Marketing", "Events", "Sponsoring", "Ressource Humaine"],
+          enum: [
+            "Marketing",
+            "Events",
+            "Sponsoring",
+            "Ressource Humaine",
+            "Chapter",
+          ],
         },
       },
     ],
@@ -42,6 +48,16 @@ const ChapterSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+ChapterSchema.pre("save", async function (nxt) {
+  try {
+    if (!this.isModified("password")) return nxt();
+    this.password = await bcrypt.hash(this.password, 10);
+    return nxt();
+  } catch (err) {
+    throw err;
+  }
+});
 ChapterSchema.plugin(softDelete);
 const ChapterModel = mongoose.model("Chapter", ChapterSchema);
 export default ChapterModel;

@@ -1,14 +1,13 @@
-import ChapterModel from "../models/ChapterModel.js";
-import bcrypt from "bcrypt";
 import asyncHandler from "express-async-handler";
-import UserModel from "../models/userModel.js";
 import sharp from "sharp";
-import path from "path";
+import ChapterModel from "../models/ChapterModel.js";
+import UserModel from "../models/userModel.js";
 export const CreateChapter = asyncHandler(async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(req.body.password, salt);
-    req.body.password = hashedPass;
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPass = await bcrypt.hash(req.body.password, salt);
+    // req.body.password = hashedPass;
+    console.log(req.body, req.files);
     const newChapter = new ChapterModel(req.body);
     // addition new
     const oldChapter = await ChapterModel.findOne({
@@ -16,7 +15,8 @@ export const CreateChapter = asyncHandler(async (req, res) => {
     });
     if (oldChapter)
       return res.status(400).json({ message: "Chapter already exists" });
-
+    newChapter.coverImage = req.files["coverImage"][0].filename;
+    newChapter.profileImage = req.files["profileImage"][0].filename;
     // changed
     const Chapter = await newChapter.save();
     res.status(200).json({ Chapter });
@@ -45,9 +45,9 @@ export const getChapter = asyncHandler(async (req, res) => {
     if (Chapter) {
       const { password, ...otherDetails } = Chapter._doc;
 
-      res.status(200).json({ otherDetails });
+      return res.status(200).json({ otherDetails });
     } else {
-      res.status(404).json("No such Chapter");
+      return res.status(404).json("No such Chapter");
     }
   } catch (error) {
     res.status(500).json(error);
@@ -82,6 +82,8 @@ export const addMembresChapter = asyncHandler(async (req, res) => {
     const Tunimateur = req.body.tunimateur;
     const role = req.body.role;
     const Departement = req.body.Departement;
+    var dateobj = new Date().getFullYear();
+    var dateObject = dateobj.toString(); // get mondat year
     const upadateObject = ChapterModel.findById(id)
       .then((result) =>
         result.Tunimateurs.filter(
@@ -89,7 +91,8 @@ export const addMembresChapter = asyncHandler(async (req, res) => {
         )
       )
       .then((results) => console.log(results));
-    console.log("updated" + JSON.stringify(upadateObject));
+    const Chapter = await ChapterModel.findOne({ _id: id });
+    const User = UserModel.findById(Tunimateur);
     ChapterModel.findByIdAndUpdate(
       { _id: id },
       {
@@ -106,11 +109,32 @@ export const addMembresChapter = asyncHandler(async (req, res) => {
       },
       (err, result) => {
         if (err) return res.status(422).json({ error: err.message });
-        UserModel.findByIdAndUpdate(Tunimateur, {
+        if (User.isClub === true) {
+          User.isClub = false;
+          User.save();
+        }
+        User.DetailsTunimateur.push({
+          Chapter: Chapter._id,
+          ChapterName: Chapter.ChapterName,
           role: req.body.role,
           Departement: req.body.Departement,
+          ClubName: Chapter.ChapterName,
+          club: Chapter._id,
+          Mondat: dateObject,
+          EndMondat: dateObject + 1,
+        });
+
+        User.save();
+        UserModel.findByIdAndUpdate(Tunimateur, {
+          role: req.body.role,
+          isBureau: true,
+          Departement: req.body.Departement,
+          clubName: Chapter.ChapterName,
+          club: id,
         })
-          .then((result) => res.status(200).json(result))
+          .then((result) => {
+            return res.status(200).json(result);
+          })
           .catch((err) => {
             return res.status(422).json({ error: err.message });
           });
@@ -120,11 +144,11 @@ export const addMembresChapter = asyncHandler(async (req, res) => {
     return res.status(500).json(error);
   }
 });
-export const RemouveMembresChapter = asyncHandler((req, res) => {
+export const RemouveMembresChapter = asyncHandler(async (req, res) => {
   try {
     const id = req.body.id;
     const Tunimateur = req.body.tunimateur;
-    console.log(req.body);
+    const Chapter = await ChapterModel.findOne({ _id: id });
     ChapterModel.findByIdAndUpdate(
       { _id: id },
       {
@@ -144,6 +168,9 @@ export const RemouveMembresChapter = asyncHandler((req, res) => {
         UserModel.findByIdAndUpdate(Tunimateur, {
           role: req.body.role,
           Departement: req.body.Departement,
+          clubName: Chapter.ChapterName,
+          club: id,
+          isBureau: false,
         })
           .then((result) => res.status(200).json(result))
           .catch((err) => {

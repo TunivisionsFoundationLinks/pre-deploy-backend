@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 const UserSchema = mongoose.Schema(
   {
     email: {
@@ -56,8 +56,8 @@ const UserSchema = mongoose.Schema(
     isClub: { type: Boolean, default: false },
     DetailsTunimateur: [
       {
-        club: { type: mongoose.Schema.Types.ObjectId, ref: "clubs" },
-        ClubName: { type: String, ref: "clubs" },
+        club: { type: String },
+        ClubName: { type: String },
         Chapter: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "chapters",
@@ -86,6 +86,7 @@ const UserSchema = mongoose.Schema(
             "Sponsoring",
             "Ressource Humaine",
             "Club",
+            "Chapter",
           ],
         },
         Mondat: {
@@ -104,8 +105,8 @@ const UserSchema = mongoose.Schema(
       type: String,
       ref: "chapters",
     },
-    club: { type: mongoose.Schema.Types.ObjectId, ref: "clubs" },
-    clubName: { type: String, ref: "clubs" },
+    club: { type: String },
+    clubName: { type: String },
     role: {
       type: String,
       enum: [
@@ -120,12 +121,23 @@ const UserSchema = mongoose.Schema(
     },
     Departement: {
       type: String,
-      enum: ["Marketing", "Events", "Sponsoring", "Ressource Humaine", "Club"],
+      enum: [
+        "Marketing",
+        "Events",
+        "Sponsoring",
+        "Ressource Humaine",
+        "Club",
+        "Chapter",
+      ],
     },
     activityParticipation: [
       { type: mongoose.Schema.Types.ObjectId, ref: "activities" },
     ],
     request: { type: Boolean, default: false },
+    Blocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
