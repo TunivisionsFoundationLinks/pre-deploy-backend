@@ -1,36 +1,36 @@
-import express from "express";
 import bodyParser from "body-parser";
-import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
+import http from "http";
 import mongoose from "mongoose";
 import authMiddleWare from "./middleware/AuthMiddleware.js";
 // routes
-import AuthRoute from "./routes/AuthRoute.js";
-import UserRoute from "./routes/UserRoute.js";
-import PostRoute from "./routes/PostRoute.js";
-import UploadRoute from "./utils/upload.js";
-import ChatRoute from "./routes/ChatRoute.js";
-import MessageRoute from "./routes/MessageRoute.js";
-import InfoRoute from "./routes/InfoRouter.js";
-import RegionRoute from "./routes/StatesRoute.js";
-import ChapterRoute from "./routes/ChapterRouter.js";
-import RoleRoute from "./routes/AdminRoleRoute.js";
-import friendInvitationRoutes from "./routes/friendInvitationRoutes.js";
-import groupChatRoutes from "./routes/groupChatRoutes.js";
-import ClubRoute from "./routes/clubsRoute.js";
-import ActivityRoutes from "./routes/ActivityRoute.js";
-import { createSocketServer } from "./socket/socketServer.js";
-import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import ActivityRoutes from "./routes/ActivityRoute.js";
+import RoleRoute from "./routes/AdminRoleRoute.js";
+import AuthRoute from "./routes/AuthRoute.js";
+import ChapterRoute from "./routes/ChapterRouter.js";
+import ChatRoute from "./routes/ChatRoute.js";
+import InfoRoute from "./routes/InfoRouter.js";
+import MessageRoute from "./routes/MessageRoute.js";
+import PostRoute from "./routes/PostRoute.js";
+import RegionRoute from "./routes/StatesRoute.js";
+import UserRoute from "./routes/UserRoute.js";
+import ClubRoute from "./routes/clubsRoute.js";
+import friendInvitationRoutes from "./routes/friendInvitationRoutes.js";
+import groupChatRoutes from "./routes/groupChatRoutes.js";
+import { createSocketServer } from "./socket/socketServer.js";
+import UploadRoute from "./utils/upload.js";
 
 const app = express();
 dotenv.config();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://65738dbcbb4575670b524dbd--tlinkfrontend.netlify.app",
     credentials: true,
     optionSuccessStatus: 200,
   })
