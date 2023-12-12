@@ -30,7 +30,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: "https://tlinkfrontend.netlify.app/",
+    origin: "https://tlinkfrontend.netlify.app",
     optionSuccessStatus: 200,
   })
 );
